@@ -23,7 +23,7 @@
 <script>
 	var container, stats;
 
-			var camera, scene, renderer;
+	var camera, scene, renderer;
 
 			var cube, plane;
 
@@ -38,6 +38,8 @@
 
 			init();
 			animate();
+			
+			var changed=[]; 
 
 			function init() {
 				
@@ -52,70 +54,88 @@
 
 				// Cube
 
-				var geometry = new THREE.CubeGeometry( 75, 75, 100 );
-
-				for ( var i = 0; i < geometry.faces.length; i += 2 ) {
-
-					var hex = Math.random() * 0xffffff;
-					geometry.faces[ i ].color.setHex( hex );
-					geometry.faces[ i + 1 ].color.setHex( hex );
-
-				}
-
-				var material = new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, overdraw: 0.5 } );
-				var secondMaterial = new THREE.MeshLambertMaterial( {color: "0x56ffee"}); 
+				var material0 = new THREE.MeshBasicMaterial( { color:0xffccee, overdraw: 0.5 } );
+				var material1 = new THREE.MeshLambertMaterial( { color:0xffccee}); 
+				var material2 = new THREE.MeshLambertMaterial( {color: "0x56ffee"}); 
+				var material3 = new THREE.MeshPhongMaterial({   specular: '#a9fcff',
+				color: '#00abb1', emissive: '#006063',   shininess: 250}); 
 				
-				cube = new THREE.Mesh( geometry,new THREE.MeshPhongMaterial({   specular: '#a9fcff',
-				color: '#00abb1', emissive: '#006063',   shininess: 250}));
+				cube = new THREE.Mesh( new THREE.CubeGeometry(75,75,75),material1);
 				cube.position.y = 150;
 				scene.add( cube );
 
 				// Plane
 
 				var geometry = new THREE.PlaneGeometry( 200, 200 );
-				geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) );
-
-				var material = new THREE.MeshBasicMaterial( { color: 0xe0e0e0, overdraw: 0.5 } );
-
-				plane = new THREE.Mesh( geometry, material );
-				plane.position.y = -75; 
+				geometry.applyMatrix( new THREE.Matrix4().makeRotationX( - Math.PI / 2 ) ); // changes all of its coordinates
+				var planematerial = new THREE.MeshBasicMaterial( { color: 0xe0e0e0, overdraw: 0.5 } );
+				plane = new THREE.Mesh( geometry, planematerial );
+				plane.position.y = -95; 
 				scene.add( plane );
 				
-				head = new THREE.Mesh(new THREE.SphereGeometry(60,15,15),new THREE.MeshPhongMaterial({   specular: '#a9fcff',
-				color: '#00abb1', emissive: '#006063',   shininess: 250})); 
+				head = new THREE.Mesh(new THREE.SphereGeometry(60,15,15),material1); 
 				head.position.y = 280;
-				scene.add(head);
+				scene.add(head);				
 				
-				
-				skirt = new THREE.Mesh(new THREE.CylinderGeometry(0, 75, 120, 5, 7, false), new THREE.MeshPhongMaterial({   specular: '#a9fcff',
-				color: '#00abb1', emissive: '#006063',   shininess: 250}));
+				skirt = new THREE.Mesh(new THREE.CylinderGeometry(0, 75, 120, 5, 7, false), material1);
 				skirt.position.y += 25;
 				scene.add(skirt);
 				
-				lighting = new THREE.PointLight(0xFFFFFF); 
+				lighting = new THREE.PointLight(0xffffff); 
 				lighting.position.x = 100; 
 				lighting.position.y = 100; 
 				lighting.position.z = 100; 
 				scene.add(lighting); 
+			
+				secondLight = new THREE.PointLight(0xffffaa); 
+				secondLight.position.y = 600;
+				secondLight.position.x = -200;
+				secondLight.position.z = 100;
+				scene.add(secondLight); 
 			
 				renderer = new THREE.CanvasRenderer();
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
 				container.appendChild( renderer.domElement );		
 				
-
-				window.onmousedown=function(){onDocumentMouseDown(event)	}; 
-				//document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				document.addEventListener( 'touchstart', onDocumentTouchStart, false );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				//document.addEventListener( 'touchstart', onDocumentTouchStart, false );
 				document.addEventListener( 'touchmove', onDocumentTouchMove, false );
-
-				
-			
-
+				//document.addEventListener( 'touchmove', mouseoverselection, false );
+				//document.addEventListener( 'mousemove',mouseoverselection,false);
 				window.addEventListener( 'resize', onWindowResize, false );
 
 			}
+			
+			function mouseoverselection(event){
+				event.preventDefault();
+				var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+				projector.unprojectVector( vector, camera );
 
+				var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+				var intersects = raycaster.intersectObjects( scene.children);
+				
+				if ( intersects.length > 0){
+					alert("hi"); }
+				/*				
+				
+					alert("hi"); 
+					changed.push(intersects[0]); 
+					intersects[0].object.material.color.setHex(0x00afbe);
+					intersects[0].object.material.opacity = 1;
+				}
+				else {
+					while(changed.length >0){
+					var temp = changed.pop(); 
+					temp.object.material.color.setHex(Math.random()* 0xffffff);
+					temp.object.material.opacity = 0.5;
+					temp.object.position.z += (Math.random() * - 1 + 1) * 15; 
+					temp.object.position.x += (Math.random() * - 1 + 1) * 15;
+						}
+					}*/
+			}
+			
 			function onWindowResize() {
 
 				windowHalfX = window.innerWidth / 2;
@@ -141,9 +161,7 @@
 			}
 
 			function onDocumentMouseMove( event ) {
-
 				mouseX = event.clientX - windowHalfX;
-
 				targetRotation = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02;
 
 			}
@@ -180,7 +198,6 @@
 			function onDocumentTouchMove( event ) {
 
 				if ( event.touches.length === 1 ) {
-
 					event.preventDefault();
 
 					mouseX = event.touches[ 0 ].pageX - windowHalfX;
@@ -213,6 +230,8 @@
 
 <p style = "font-size:1.8em"> Features we hope to implement </p>
 <ul>
+<li> Preset poses like the Tebow, or the superman </li> 
+<li> scrolling rotates in the x axis, dragging the mouse up rotates in the y axis, and dragging the mouse across rotates in the z axis </li>
 <li>Saving image to file for future reference</li>
 <li>Selecting Certain Parts to rotate instead of the whole body</li> 
 <li>Realistic Body Parts (probably through 3D sculpting software)</li> 

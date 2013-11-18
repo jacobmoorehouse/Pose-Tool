@@ -12,12 +12,12 @@
 				overflow: hidden;
 			}
 		</style>
-	</head>
+	</head>
 	<body>
 
-		<script src="../build/three.min.js"></script>
+		<script src="three.min.js"></script>
 
-		<script src="js/libs/stats.min.js"></script>
+		
 
 		<script>
 
@@ -85,9 +85,7 @@
 
 					}
 
-				} );
-
-				 
+				} );				 
 				
 				projector = new THREE.Projector();
 
@@ -96,12 +94,13 @@
 
 				container.appendChild( renderer.domElement );
 
+				/*
 				stats = new Stats();
 				stats.domElement.style.position = 'absolute';
 				stats.domElement.style.top = '0px';
-				container.appendChild( stats.domElement );
+				container.appendChild( stats.domElement );*/
 
-				//document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 				document.addEventListener( 'mousemove',myownmouseover,false);
 				//document.addEventListener('mouseout', onDocumentMouseDown,false);
                 
@@ -138,7 +137,8 @@
 					var temp = changed.pop(); 
 					temp.object.material.color.setHex(Math.random()* 0xffffff);
 					temp.object.material.opacity = 0.5;
-					temp.object.position.z += (Math.random() * - 1 + 1) * 15; 
+					//temp.object.position.x = Math.pow( Math.pow(temp.object.position.z, 2) + Math.pow(temp.object.position.y,2), 0.5);
+					temp.object.position.z += 10;//(Math.random() * - 1 + 1) * 15; 
 					temp.object.position.x += (Math.random() * - 1 + 1) * 15;
 						}
 					}
@@ -190,7 +190,7 @@
 				requestAnimationFrame( animate );
 
 				render();
-				stats.update();
+				//stats.update();
 
 			}
 
@@ -199,7 +199,7 @@
 
 			function render() {
 				
-				theta += 0.5;
+				theta += 0.15;
 
 				camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
 				camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
