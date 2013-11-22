@@ -2,32 +2,22 @@
 <head>
 <title>Codine's Posing Tool!</title>
 <link rel="stylesheet" type="text/css" href="style.css">
-<script type="text/javascript" src="Cango3D-4v04.js"></script>
 <script type="text/javascript" src="three.js"></script>
 </head>
 
 <body>
-<h1> Welcome to our posing tool! </h1>
 
-<p class = "Intro" style = "display:none"> We will be building a posing tool that recreates the human body and allow artists to have a 
-	semi-realistic reference. Each part of the body will be able to rotate a full 360 degrees except 
-	exceptions that we feel will be needed. 
-	In order to do this we will program every limb as a straight, unbendable rod and each joint as a sphere.
-	Then we will replace each rod with a 3D model of what object should be there.
-	The user will be able to fully rotate the entire body by dragging the screen and perhaps even zooming in.
-	Additionally, we will allow the user to save the current pose as a jpeg for future reference, 
-	and even change certain features of the human body, and changing its gender. <p>
-<p class = "Names"> Scroll through the page with the arrow keys! <br>Codine is made of Junze He and Jacob Moorehouse. </p>
 
 
 <script src="three.min.js"></script>
 <script src="js/controls/TrackballControls.js"></script>
 <script>
-	
+	//this was partially edited in sublime text which looks badass and this is a reminder to download it on your windows machine -Junze to Junze http://www.sublimetext.com/2
 	var container, stats;
 	var camera, controls, scene, renderer,projector;
 	var sphere, plane,donut;
 	var changed = [];
+	var selected = []; 
 
 	init();
 	animate();
@@ -48,19 +38,21 @@
 		var material2 = new THREE.MeshLambertMaterial( {color: 0x56ffee}); 
 		var material4 = new THREE.MeshLambertMaterial( {color: 0x25ffee} ); 
 		/*-------------------------*/
-		//making things the same material leads to changing the material of multiple objects when hovering over
-		// this could be useful for when we want to rotate multiple objects maybe not
-		cube = new THREE.Mesh( new THREE.CubeGeometry(75,75,75),material1);
+		cube = new THREE.Mesh( new THREE.CubeGeometry(75,75,75),new THREE.MeshLambertMaterial( { color:0xffccee}));
 		cube.position.y = -85;
 		scene.add( cube );
 		
-		sphere = new THREE.Mesh( new THREE.SphereGeometry( 50, 15,15), material1);
+		sphere = new THREE.Mesh( new THREE.SphereGeometry( 50, 15,15), new THREE.MeshLambertMaterial( { color:0xffccee}));
 		scene.add( sphere );
-		
-		donut = new THREE.Mesh(new THREE.TorusGeometry(100, 45, 8, 15, Math.PI*2), material1); 
+
+		sphere2 = new THREE.Mesh( new THREE.SphereGeometry( 50, 15,15), new THREE.MeshLambertMaterial( { color:0xffccee}));
+		sphere2.position.y = 200;
+		scene.add( sphere2 );
+		donut = new THREE.Mesh(new THREE.TorusGeometry(100, 45, 8, 15, Math.PI*2), new THREE.MeshLambertMaterial( { color:0xffccee})); 
 		donut.position.y=200;
+		donut.position.x = 150; 
 		donut.rotation.x= Math.PI/2;
-		scene.add(donut);
+		scene.add(donut); 
 	  
 		//lights
 		var pointLight = new THREE.PointLight( 0xffffff );
@@ -89,10 +81,56 @@
 		container.appendChild( renderer.domElement );
 		
 		
-		document.addEventListener( 'mousemove',mouseover,false);
+		//document.addEventListener( 'mousemove',mouseover,false);
+		document.addEventListener('mousedown',mousey,false);
 		window.addEventListener( 'resize', onWindowResize, false );
 	  }	   
-	  
+
+	 function mousey (event){
+	 	//This function will happen whenever the user clicks in the window.
+	 	//The function will determine the mouse intersects any objects in the window.
+	 	//If it does intersect objects, then it will clear the array of selected objects, and add the selected array to that object. 
+	 	//Until the user selects another object, that object will also be the selected one. 
+	 	
+	 	event.preventDefault();
+		var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+		projector.unprojectVector( vector, camera );
+		
+		var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+		var intersects = raycaster.intersectObjects( scene.children); // list of things that intersect the mouse
+				
+		if ( intersects.length > 0){   // we only care about the first one, we only select the first one 
+			while (selected.length > 0){
+				selected.pop().object.material.color.setHex(Math.random()* 0xffffff);
+			}
+			intersects[0].object.material.color.setHex(0x00afbe);
+			intersects[0].object.material.opacity = 1;
+			selected.push(intersects[0]); 
+
+		}
+
+	 }
+
+	 
+/*
+	 function changeX(var amount){
+	 	//This function will be accessed by the button that corresponds to a change in x. 
+	 	//The amount will always be the same but it could be positive or negative depending on the button. 
+	 	//Make sure to check that the selected is not null first. 
+	 	alert("sup");
+	 }
+
+	 function changeY(var amount){
+	 	//Refer to changeX
+	 	alert("hey");
+	 }
+
+	 function changeZ(var amount){
+	 	//Refer to changeX
+	 	alert("I'm crazy");
+	 } 
+*/	  
 	function mouseover(event){
 		// most of this code will be irrelevant to you until i write what happens when you click
 		event.preventDefault();
@@ -114,9 +152,14 @@
 				temp.object.material.color.setHex(Math.random()* 0xffffff);
 				temp.object.material.opacity = 1	;
 				//temp.object.position.x = Math.pow( Math.pow(temp.object.position.z, 2) + Math.pow(temp.object.position.y,2), 0.5);
-				temp.object.position.z += 10;//(Math.random() * - 1 + 1) * 15; 
-				temp.object.position.x += (Math.random() * - 1 + 1) * 15;
-				
+				//temp.object.position.z += 10;//(Math.random() * - 1 + 1) * 15; 
+				temp.object.position.x += (camera.position.x - temp.object.position.x)/20;
+				temp.object.position.y += (camera.position.y - temp.object.position.y)/20;
+				temp.object.position.z += (camera.position.z - temp.object.position.z)/20;
+				//camera.position.x = temp.object.position.x+400;
+				//camera.position.y = temp.object.position.y+400;
+				//camera.position.z = temp.object.position.z+200;
+				//pointlight.position.x = camera.position.x;
 				}
 			}
 	}

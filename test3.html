@@ -1,148 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>Cube Interactive three.js canvas - interactive - cubes</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				font-family: Monospace;
-				background-color: #f0f0f0;
-				margin: 0px;
-				overflow: hidden;
-			}
-		</style>
-	</head>
-	<body>
+<head>
+	<title>Cube Interactive three.js canvas - interactive - cubes</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+	<style>
+		body {
+			font-family: Monospace;
+			background-color: #f0f0f0;
+			margin: 0px;
+			overflow: hidden;
+		}
+	</style>
+</head>
+<body>
+<script src="three.min.js"></script>
+<script src="js/controls/TrackballControls.js"></script>
+<script>
 
-		<script src="three.min.js"></script>
+	var container, stats,controls;
+	var camera, scene, projector, renderer;
+	var particleMaterial;
 
+	var objects = [];
+	var changed = []; 
 		
+	init();
+	animate();
 
-		<script>
+	function init() {
 
-			var container, stats;
-			var camera, scene, projector, renderer;
-			var particleMaterial;
+		container = document.createElement( 'div' );
+		document.body.appendChild( container );
 
-			var objects = [];
-			var changed = []; 
-			
-			init();
-			animate();
+		var info = document.createElement( 'div' );
+		info.style.position = 'absolute';
+		info.style.top = '10px';
+		info.style.width = '100%';
+		info.style.textAlign = 'center';
+		info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> - clickable objects';
+		container.appendChild( info );
 
-			function init() {
+		scene = new THREE.Scene();
 
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
+		var geometry = new THREE.CubeGeometry( 100, 100, 100 );
 
-				var info = document.createElement( 'div' );
-				info.style.position = 'absolute';
-				info.style.top = '10px';
-				info.style.width = '100%';
-				info.style.textAlign = 'center';
-				info.innerHTML = '<a href="http://threejs.org" target="_blank">three.js</a> - clickable objects';
-				container.appendChild( info );
+		for ( var i = 0; i < 25; i ++ ) {
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
-				camera.position.set( 0, 300, 500 );
+			var object = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, opacity: 0.5 } ) );
+			object.position.x = Math.random() * 800 - 400;
+			object.position.y = Math.random() * 800 - 400;
+			object.position.z = Math.random() * 800 - 400;
+			object.scale.x = Math.random() * 2 + 1;
+			object.scale.y = Math.random() * 2 + 1;
+			object.scale.z = Math.random() * 2 + 1;
 
-				scene = new THREE.Scene();
-
-				var geometry = new THREE.CubeGeometry( 100, 100, 100 );
-
-				for ( var i = 0; i < 25; i ++ ) {
-
-					var object = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( { color: Math.random() * 0xffffff, opacity: 0.5 } ) );
-					object.position.x = Math.random() * 800 - 400;
-					object.position.y = Math.random() * 800 - 400;
-					object.position.z = Math.random() * 800 - 400;
-
-					object.scale.x = Math.random() * 2 + 1;
-					object.scale.y = Math.random() * 2 + 1;
-					object.scale.z = Math.random() * 2 + 1;
-
-					object.rotation.x = Math.random() * 2 * Math.PI;
-					object.rotation.y = Math.random() * 2 * Math.PI;
-					object.rotation.z = Math.random() * 2 * Math.PI;
-
-					
-					scene.add( object );
-
-					objects.push( object );
-
-				}
-
-				var PI2 = Math.PI * 2;
-				particleMaterial = new THREE.SpriteCanvasMaterial( {
-
-					color: 0x000000,
-					program: function ( context ) {
-
-						context.beginPath();
-						context.arc( 0, 0, 1, 0, PI2, true );
-						context.fill();
-
-					}
-
-				} );				 
+			object.rotation.x = Math.random() * 2 * Math.PI;
+			object.rotation.y = Math.random() * 2 * Math.PI;
+			object.rotation.z = Math.random() * 2 * Math.PI;
 				
-				projector = new THREE.Projector();
+			scene.add( object );
+			objects.push( object );
 
-				renderer = new THREE.CanvasRenderer();
-				renderer.setSize( window.innerWidth, window.innerHeight );
+		}
+				
+		donut = new THREE.Mesh(new THREE.TorusGeometry(100, 45, 8, 15, Math.PI*2), new THREE.MeshLambertMaterial( { color:0xffccee})); 
+		donut.position.y=200;
+		donut.rotation.x= Math.PI/2;
+		scene.add(donut);
+				
+		camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 10000 );
+		camera.position.set( 0, 300, 500 );
 
-				container.appendChild( renderer.domElement );
+		var PI2 = Math.PI * 2;
+		particleMaterial = new THREE.SpriteCanvasMaterial( {
 
-				/*
-				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				container.appendChild( stats.domElement );*/
+		color: 0x000000,
+		program: function ( context ) {
 
-				document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-				document.addEventListener( 'mousemove',myownmouseover,false);
-				//document.addEventListener('mouseout', onDocumentMouseDown,false);
+			context.beginPath();
+			context.arc( 0, 0, 1, 0, PI2, true );
+			context.fill();
+			}} );				 
+				
+		projector = new THREE.Projector();
+
+		renderer = new THREE.CanvasRenderer();
+		renderer.setSize( window.innerWidth, window.innerHeight );
+
+		container.appendChild( renderer.domElement );
+				
+		controls = new THREE.TrackballControls( camera );
+		/*
+		stats = new Stats();
+		stats.domElement.style.position = 'absolute';
+		stats.domElement.style.top = '0px';
+		container.appendChild( stats.domElement );*/
+
+		document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+		document.addEventListener( 'mousemove',myownmouseover,false);
+		//document.addEventListener('mouseout', onDocumentMouseDown,false);
                 
-				window.addEventListener( 'resize', onWindowResize, false );
+		window.addEventListener( 'resize', onWindowResize, false );
 
-			}
+}
 
-			function onWindowResize() {
+function onWindowResize() {
 
-				camera.aspect = window.innerWidth / window.innerHeight;
-				camera.updateProjectionMatrix();
+	camera.aspect = window.innerWidth / window.innerHeight;
+	camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setSize( window.innerWidth, window.innerHeight );
 
-			}
+}
 			
-			function myownmouseover(event){
+function myownmouseover(event){
 				
-				event.preventDefault();
-				var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
-				projector.unprojectVector( vector, camera );
+	event.preventDefault();
+	var vector = new THREE.Vector3( ( event.clientX / window.innerWidth ) * 2 - 1, - ( event.clientY / window.innerHeight ) * 2 + 1, 0.5 );
+	projector.unprojectVector( vector, camera );
 
-				var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+	var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 
-				var intersects = raycaster.intersectObjects( scene.children);
+	var intersects = raycaster.intersectObjects( scene.children);
 				
-				if ( intersects.length > 0){
-					changed.push(intersects[0]); 
-					intersects[0].object.material.color.setHex(0x00afbe);
-					intersects[0].object.material.opacity = 1;
-				}
-				else {
-					while(changed.length >0){
-					var temp = changed.pop(); 
-					temp.object.material.color.setHex(Math.random()* 0xffffff);
-					temp.object.material.opacity = 0.5;
-					//temp.object.position.x = Math.pow( Math.pow(temp.object.position.z, 2) + Math.pow(temp.object.position.y,2), 0.5);
-					temp.object.position.z += 10;//(Math.random() * - 1 + 1) * 15; 
-					temp.object.position.x += (Math.random() * - 1 + 1) * 15;
-						}
-					}
+	if ( intersects.length > 0){
+		changed.push(intersects[0]); 
+		intersects[0].object.material.color.setHex(0x00afbe);
+		intersects[0].object.material.opacity = 1;
+	}
+	else {
+		while(changed.length >0){
+			var temp = changed.pop(); 
+			temp.object.material.color.setHex(Math.random()* 0xffffff);
+			temp.object.material.opacity = 0.5;
+			//temp.object.position.x = Math.pow( Math.pow(temp.object.position.z, 2) + Math.pow(temp.object.position.y,2), 0.5);
+			temp.object.position.z += 10;//(Math.random() * - 1 + 1) * 15; 
+			temp.object.position.x += (Math.random() * - 1 + 1) * 15;
 			}
+	}
+}
 
 			function onDocumentMouseDown( event ) {
 		
@@ -198,14 +195,15 @@
 			var theta = 0;
 
 			function render() {
-				
+			/*
 				theta += 0.15;
 
 				camera.position.x = radius * Math.sin( THREE.Math.degToRad( theta ) );
 				camera.position.y = radius * Math.sin( THREE.Math.degToRad( theta ) );
 				camera.position.z = radius * Math.cos( THREE.Math.degToRad( theta ) );
 				camera.lookAt( scene.position );
-				
+				*/
+				controls.update();
 				renderer.render( scene, camera );
 
 			}
