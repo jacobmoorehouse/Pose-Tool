@@ -11,6 +11,7 @@
 
 <script src="three.min.js"></script>
 <script src="js/controls/TrackballControls.js"></script>
+<script src="js/controls/OrbitControls.js"></script>
 <script>
 	//this was partially edited in sublime text which looks badass and this is a reminder to download it on your windows machine -Junze to Junze Junze has a tiny penis http://www.sublimetext.com/2
 	var container, stats;
@@ -38,25 +39,49 @@
 		var material2 = new THREE.MeshLambertMaterial( {color: 0x56ffee}); 
 		var material4 = new THREE.MeshLambertMaterial( {color: 0x25ffee} ); 
 		/*-------------------------*/
+	/* Pivots allow for rotating about a certain point. 
+			Pivots are originally located at (0,0,0). Therefore by moving the pivot to where the object is supposed to be, we can now rotate about that object. However, that is still not perfect. However, when we set the pivot equal to the positions of the object, the pivot is lcoated athe the center, which means it will rotate about the center. Therefore we need to lower the object until the top of the object aligns with the center, and allows it to rotate about the pivot. --Junze He
+	*/ 
+	// pivots
+	// Each part needs its own pivot
+	// Literally each joint has a pivot 
+		var pivot1 = new THREE.Object3D();
+		var pivot2 = new THREE.Object3D();
+		var pivot3 = new THREE.Object3D();
+		/*pivot1.rotation.x = 0; 
+		pivot2.rotation.z = 0;
+		pivot3.rotation.z = 0;*/
+		pivot2.position.x = -95; 
+		pivot2.position.y = -85/2; 
+		scene.add(pivot1); 
+		scene.add( pivot2 );
+		scene.add( pivot3 );
+
 		cube_body = new THREE.Mesh( new THREE.CubeGeometry(100,200,75),new THREE.MeshLambertMaterial( { color:0xffccee}));
 		cube_body.position.y = -85;
-		//cube_body.applyMatrix(new THREE.Matrix4().makeTranslation(cube_body.position.x+cube_body.geometry.width/2, cube_body.position.y+cube_body.geometry.height/2, cube_body.position.z+cube_body.geometry.depth/2));
-		scene.add( cube_body );
+		//scene.add( cube_body );
 
-		cube_head = new THREE.Mesh( new THREE.CubeGeometry(75,75,75),new THREE.MeshLambertMaterial( { color:0xffccee}));
+		cube_head = new THREE.Mesh( new THREE.CubeGeometry(75,75, 75),new THREE.MeshLambertMaterial( { color:0xffccee}));
 		cube_head.position.y = cube_body.position.y+150;
-		//cube_head.applyMatrix(new THREE.Matrix4().makeTranslation(cube_head.position.x+cube_head.geometry.width/2, cube_head.position.y+cube_head.geometry.height/2, cube_head.position.z+cube_head.geometry.depth/2));
 		scene.add( cube_head );
 
 		cube_larm = new THREE.Mesh( new THREE.CubeGeometry(25,100,50),new THREE.MeshLambertMaterial( { color:0xffccee}));
 		cube_larm.position.y = cube_body.position.y;
-		cube_larm.position.x = cube_body.position.x+75;
+		cube_larm.position.x = cube_body.position.x+95;
 		scene.add( cube_larm );
 		
 		cube_rarm = new THREE.Mesh( new THREE.CubeGeometry(25,100,50),new THREE.MeshLambertMaterial( { color:0xffccee}));
-		cube_rarm.position.y = cube_body.position.y;
-		cube_rarm.position.x = cube_body.position.x-75;
+		//cube_rarm.position.y = cube_body.position.y;
+		//cube_rarm.position.x = cube_body.position.x-95;
+	 	//document.getElementById("no").innerHTML = "hi"; 
+	 	cube_rarm.position.y = -85/2; 
 		scene.add( cube_rarm );
+
+		cube_rhand = new THREE.Mesh( new THREE.CubeGeometry(25,25,25),new THREE.MeshLambertMaterial( { color:0xffccee}));
+		//cube_rhand.position.y = 0; 
+		//cube_rhand.position.x = cube_rarm.position.x; 
+		cube_rhand.position.y = cube_rarm.position.y - 85; 
+		scene.add(cube_rhand); 
 
 		cube_lleg = new THREE.Mesh( new THREE.CubeGeometry(25,150,50),new THREE.MeshLambertMaterial( { color:0xffccee}));
 		cube_lleg.position.y = cube_body.position.y-175;
@@ -66,22 +91,17 @@
 		cube_rleg = new THREE.Mesh( new THREE.CubeGeometry(25,150,50),new THREE.MeshLambertMaterial( { color:0xffccee}));
 		cube_rleg.position.y = cube_body.position.y-175;
 		cube_rleg.position.x = cube_body.position.x-25;
-		//cube_rleg.applyMatrix(new THREE.Matrix4().makeTranslation(cube_rleg.position.x+cube_rleg.geometry.width/2, cube_rleg.position.y+cube_rleg.geometry.height/2, cube_rleg.position.z+cube_rleg.geometry.depth/2)); 
-		scene.add( cube_rleg );
+		scene.add(cube_rleg);
+
 		
-
-		/*sphere = new THREE.Mesh( new THREE.SphereGeometry( 50, 15,15), new THREE.MeshLambertMaterial( { color:0xffccee}));
-		scene.add( sphere );
-
-		sphere2 = new THREE.Mesh( new THREE.SphereGeometry( 50, 15,15), new THREE.MeshLambertMaterial( { color:0xffccee}));
-		sphere2.position.y = 200;
-		scene.add( sphere2 );
-		donut = new THREE.Mesh(new THREE.TorusGeometry(100, 45, 8, 15, Math.PI*2), new THREE.MeshLambertMaterial( { color:0xffccee})); 
-		donut.position.y=200;
-		donut.position.x = 150; 
-		donut.rotation.x= Math.PI/2;
-		scene.add(donut); */
-	  
+		pivot1.add(cube_rleg); 
+		pivot1.add(cube_lleg); 
+		pivot2.add(cube_rarm);
+		pivot2.add(cube_rhand);  
+		//pivot2.add(cube_larm); 
+		pivot3.add(cube_body); 
+		pivot3.add(cube_head); 
+	  	//pivot2.applyMatrix(new THREE.Matrix4().makeTranslation(-cube_rarm.position.x,0,0)); 
 		//lights
 		var pointLight = new THREE.PointLight( 0xffffff );
 		pointLight.position.x = 0;
@@ -102,7 +122,9 @@
 		
 		projector = new THREE.Projector();
 		
+		//Multiple control types available for the camera, each with their own upsides and downsides, we just have to pick which one we want to use
 		controls = new THREE.TrackballControls( camera );
+		//controls = new THREE.OrbitControls( camera );
 		
 		renderer = new THREE.CanvasRenderer();
 		renderer.setSize( width, height );
@@ -126,51 +148,51 @@
 		
 		var raycaster = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
 
-		var intersects = raycaster.intersectObjects( scene.children); // list of things that intersect the mouse
+		var intersects = raycaster.intersectObjects( scene.children, true); // list of things that intersect the mouse
 				
 		if ( intersects.length > 0){   // we only care about the first one, we only select the first one 
 			while (selected.length > 0){
 				selected.pop().object.material.color.setHex(0xcccccc);
 			}
+	
 			intersects[0].object.material.color.setHex(0x00afbe);
-			intersects[0].object.material.opacity = 1;
+			
+			//intersects[1].object.material.color.setHex(0x00afbe);
 			selected.push(intersects[0]); 
+			
 
 		}
 
 	 }
 
-	 
-/*
-	 function change(var amount){
-	 	//This function will be accessed by the button that corresponds to a change in x. 
-	 	//The amount will always be the same but it could be positive or negative depending on the button. 
-	 	//Make sure to check that the selected is not null first. 
-	 	//alert("sup"); 
-	 	/*if(selected.length > 0)
-	 		selected[0].object.rotation.x+= amount;
-
-	 	alert("fuck me"); 
-	 }*/
-
-	 function jacobY(amount){
+	 function changeY(amount){
 	 	//Refer to changeX
 	 	//alert("hey");
-		
-		//alert(selected[0].object.geometry.height); 
-		//selected[0].object.applyMatrix(new THREE.Matrix4().makeTranslation(selected[0].object.position.x,selected[0].object.position.y+selected[0].object.geometry.height/2,selected[0].object.position.z)); 
-	 	selected[0].object.rotation.y+=amount;
+		var initx = selected[0].object.position.x; 
+		var initz = selected[0].object.position.z; 
+		//document.getElementById("no").innerHTML = temp;  
+		//the pivot is always centered at the middle of the graph, so you have to shift it 
+		//selected[0].object.parent.position.x -=initx; 
+		//selected[0].object.parent.position.y -=inity; 
+		//selected[0].object.parent.position.z -=initz; 
+		//selected[0].object.parent.applyMatrix(new THREE.Matrix4().makeTranslation(0,0,0)); 
+
+	 	selected[0].object.parent.rotation.y +=amount; 
+		/*selected[0].object.parent.position.y += inity; 
+		selected[0].object.parent.position.x += initx; */
+		//selected[0].object.parent.position.z += initz;  
 	 }
 
-	 function jacobZ(amount){
+	 function changeZ(amount){
 	 	//Refer to changeX
 	 	//alert("I'm crazy");
-		
-	 	selected[0].object.rotation.z+=amount;
+	 	selected[0].object.parent.rotation.z+=amount;
+	 	
 	 } 
 
-	 function jacobX(amount){
- 		selected[0].object.rotation.x+=amount;	
+	 function changeX(amount){
+ 		//selected[0].object.rotation.x+=amount;	
+ 		selected[0].object.parent.rotation.x+=amount; 
  		 }
 	  
 	function mouseover(event){
@@ -185,8 +207,8 @@
 				
 		if ( intersects.length > 0){   // we only care about the first one, we only select the first one 
 			changed.push(intersects[0]); 
-			intersects[0].object.material.color.setHex(0x00afbe);
-			intersects[0].object.material.opacity = 1;
+			intersects[0].object.parent.material.color.setHex(0x00afbe);
+			intersects[0].object.parent.material.opacity = 1;
 			}
 		else {
 			while(changed.length >0){
@@ -215,25 +237,86 @@
 	  
 	function animate() {
 		requestAnimationFrame( animate );
+		//parent.rotation.x +=0.02;
 		render();
 	}
 	   
 	function render() {
 		controls.update();
+
+		//document.getElementById("no").innerHTML = cube_rleg.rotation.z; 
 		renderer.render( scene, camera );
+	}
+
+	function cameraReset(){
+		camera.position.x = 0; 		
+		camera.position.y = 100; 
+		camera.position.z = 480; 
+		camera.rotation.x += 0-camera.rotation.x; 
+		camera.rotation.y += Math.PI/5; 
+		camera.rotation.z += 0-camera.rotation.z; 
 	}
 	   
 </script>
 
-<button type="button" onclick=" jacobY(Math.PI/10)" >Rotate Y pos</button>
-<button type="button" onclick=" jacobY(-Math.PI/10)" >Rotate Y neg</button>
-<button type="button" onclick=" jacobX(Math.PI/10)" >Rotate X pos</button>
-<button type="button" onclick=" jacobX(-Math.PI/10)" >Rotate X neg</button>
-<button type="button" onclick=" jacobZ(Math.PI/10)" >Rotate Z pos</button>
-<button type="button" onclick=" jacobZ(-Math.PI/10)" >Rotate Z neg</button>
+<button type="button" onclick="changeY(Math.PI/10)" >Rotate Y pos</button>
+<button type="button" onclick="changeY(-Math.PI/10)" >Rotate Y neg</button>
+<button type="button" onclick="changeX(Math.PI/10)" >Rotate X pos</button>
+<button type="button" onclick="changeX(-Math.PI/10)" >Rotate X neg</button>
+<button type="button" onclick="changeZ(Math.PI/10)" >Rotate Z pos</button>
+<button type="button" onclick="changeZ(-Math.PI/10)" >Rotate Z neg</button>
+<button type="button" onclick="cameraReset()">Reset Camera</button>
 
+<!-- small bug with clicking the buttons and having the buttons behind it, wil need to fix-->
+<p id="no"> s</p>
 </body>
 
 
 
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
