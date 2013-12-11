@@ -16,7 +16,6 @@
 	var sphere, plane,donut;
 	var changed = [];
 	var selected = []; 
-	var tracker = 0; 
 	//var control_type; 
 
 	init();
@@ -205,6 +204,7 @@
 		renderer = new THREE.CanvasRenderer();
 		renderer.setSize( width, height );
 		container.appendChild( renderer.domElement );
+		
 		//document.addEventListener( 'mousemove',mouseover,false);
 		document.addEventListener('mousedown',mousey,false);
 		window.addEventListener( 'resize', onWindowResize, false );
@@ -283,17 +283,6 @@
 			cube_body.position.x +=2;  
 		//Testing the limits of the window size
 		*/
-		if ( tracker < 0) {
-		}
-		else if(tracker<4){
-			neck.rotation.x += Math.PI/10; 
-			right_shoulder.rotation. x += Math.PI/12; 
-			tracker++}
-		else{
-			tracker = 0; 
-			neck.rotation.x -= 4*(Math.PI/10); 
-			right_shoulder.rotation.x -= 4*(Math.PI/12); 
-			}
 		render();
 	}
 
@@ -325,6 +314,7 @@
 		camera.rotation.z += 0-camera.rotation.z; 
 	}
 	function tebow(){
+		resetBody();
 		pelvic.rotation.x = -Math.PI/5;
 		upperBody.rotation.x = Math.PI/3.9;
 		right_knee.rotation.x = Math.PI/1.7;
@@ -338,7 +328,157 @@
 		right_shoulder.rotation.x = -Math.PI/2.5;
 		right_elbow.rotation.z = -Math.PI/4;
 
-	}	
+	}
+
+	function resetBody(){
+		upperBody.position.y=95;
+		upperBody.rotation.y=2*Math.PI;
+		upperBody.rotation.x=2*Math.PI;
+		upperBody.rotation.z=2*Math.PI;
+		
+		lowerBody.position.y=95;
+		lowerBody.rotation.y=2*Math.PI;
+		lowerBody.rotation.x=2*Math.PI;
+		lowerBody.rotation.z=2*Math.PI;
+
+		pelvic.position.y=-60;
+		pelvic.rotation.y=2*Math.PI;
+		pelvic.rotation.x=2*Math.PI;
+		pelvic.rotation.z=2*Math.PI;
+
+		neck.position.y=60;
+		neck.rotation.y=2*Math.PI;
+		neck.rotation.x=2*Math.PI;
+		neck.rotation.z=2*Math.PI;
+
+		right_shoulder.position.y=60;
+		right_shoulder.position.x=29+15+25;
+		right_shoulder.rotation.y=2*Math.PI;
+		right_shoulder.rotation.x=2*Math.PI;
+		right_shoulder.rotation.z=2*Math.PI + Math.PI/17;
+
+		right_elbow.position.y=-75;
+		right_elbow.rotation.y=2*Math.PI;
+		right_elbow.rotation.x=2*Math.PI;
+		right_elbow.rotation.z=2*Math.PI - Math.PI/15;
+
+		right_wrist.position.y=-48;
+		right_wrist.rotation.y=2*Math.PI;
+		right_wrist.rotation.x=2*Math.PI;
+		right_wrist.rotation.z=2*Math.PI;
+
+		left_shoulder.position.y=60;
+		left_shoulder.position.x=-(29+15+25);
+		left_shoulder.rotation.y=2*Math.PI;
+		left_shoulder.rotation.x=2*Math.PI;
+		left_shoulder.rotation.z=2*Math.PI - Math.PI/17;
+
+		left_elbow.position.y=-75;
+		left_elbow.rotation.y=2*Math.PI;
+		left_elbow.rotation.x=2*Math.PI;
+		left_elbow.rotation.z=2*Math.PI + Math.PI/15;
+
+		left_wrist.position.y=-48;
+		left_wrist.rotation.y=2*Math.PI;
+		left_wrist.rotation.x=2*Math.PI;
+		left_wrist.rotation.z=2*Math.PI;
+
+		right_hip.position.y=0;
+		right_hip.position.x=20+25/2+8;
+		right_hip.rotation.y=2*Math.PI;
+		right_hip.rotation.x=2*Math.PI;
+		right_hip.rotation.z=2*Math.PI + Math.PI/25;
+
+		right_knee.position.y=-145-10;
+		right_knee.rotation.y=2*Math.PI;
+		right_knee.rotation.x=2*Math.PI;
+		right_knee.rotation.z=2*Math.PI - Math.PI/20;
+
+		left_hip.position.y=0;
+		left_hip.position.x=-(20+25/2+8);
+		left_hip.rotation.y=2*Math.PI;
+		left_hip.rotation.x=2*Math.PI;
+		left_hip.rotation.z=2*Math.PI - Math.PI/25;
+
+		left_knee.position.y=-145-10;
+		left_knee.rotation.y=2*Math.PI;
+		left_knee.rotation.x=2*Math.PI;
+		left_knee.rotation.z=2*Math.PI + Math.PI/20;
+
+
+	}
+
+	function itsGood(){
+		resetBody();
+
+		right_shoulder.rotation.x =5*-Math.PI/10;
+		right_shoulder.rotation.z =4*Math.PI/10;
+		right_elbow.rotation.x =6*-Math.PI/10;
+
+		left_shoulder.rotation.x =5*-Math.PI/10;
+		left_shoulder.rotation.z =4*-Math.PI/10;
+		left_elbow.rotation.x =6*-Math.PI/10;
+		
+		
+	}
+
+	function superman() {
+		resetBody();
+
+		left_shoulder.rotation.x = 10 * -Math.PI/10;;
+		left_elbow.rotation.z = Math.PI/10;;
+
+		right_shoulder.rotation.x = Math.PI/10;
+		right_elbow.rotation.x = 9 * -Math.PI/10;;
+
+		neck.rotation.x = 3 * -Math.PI/10;;
+
+		left_hip.rotation.z = .5* Math.PI/10;;
+		left_knee.rotation.z = .5* -Math.PI/10;
+
+		right_hip.rotation.z = .5* -Math.PI/10;
+		right_knee.rotation.z = .5* Math.PI/10;
+	}
+
+	function yy(){
+		resetBody();
+
+		right_shoulder.rotation.x = 10* -Math.PI/10;
+		right_shoulder.rotation.z = Math.PI/10;
+
+		left_shoulder.rotation.x = 10* -Math.PI/10;
+		left_shoulder.rotation.z = -Math.PI/10;
+	}
+
+	function ym(){
+		yy();
+
+		right_elbow.rotation.z = 7* -Math.PI/10;
+
+		left_elbow.rotation.z = 7 * Math.PI/10;
+	}
+
+	function ymc(){
+		ym();
+
+		right_elbow.rotation.z = -Math.PI/10;
+
+		left_elbow.rotation.z = 3 * Math.PI/10;
+
+		upperBody.rotation.z = 2 * -Math.PI/10;
+	}
+
+	function ymca(){
+		ymc();
+
+		upperBody.rotation.z = 2*Math.PI;
+
+		right_shoulder.rotation.z = -Math.PI/10;
+		right_elbow.rotation.z = -Math.PI/50;
+
+		left_shoulder.rotation.z = Math.PI/10;
+		left_elbow.rotation.z = Math.PI/50;
+	}
 
 	function menuHide(id1, id2){
 		if(document.getElementById(id1).style.display == "none"){
@@ -376,8 +516,16 @@
 <p id="controls"> </p>
 <br>
 <button type="button" onclick="cameraReset()">Reset Camera</button>
+<button type="button" onclick="resetBody()">Reset Body</button>
 <button type="button" onclick="changeControls()">Change Controls</button>
 <button type="button" onclick="tebow()">The Tebow</button>
+<button type="button" onclick="itsGood()">FREEZE</button>
+<button type="button" onclick="superman()">Superman</button>
+<button type="button" onclick="yy()">Y</button>
+<button type="button" onclick="ym()">M</button>
+<button type="button" onclick="ymc()">C</button>
+<button type="button" onclick="ymca()">A</button>
+
 
 <ul id = "light1">
 	<li><img src="plus.png"  onclick="light1('x',15)" >Light X<img src="minus.png" onclick="light1('x',-15)" ></li>
