@@ -37,6 +37,23 @@ p.Instructions{
 	color: #FF6699;
 }
 
+#firstA{
+	color:#009989;
+	background-color:#a0ddee;
+	font-size:1.2em;
+	margin-top:0px;
+	padding-right:38px;
+	position:fixed;
+	top:16.3%;
+}
+
+#first{
+	background-color:#ccddee;
+	padding:1px;
+	position:fixed;
+	top:1%;
+}
+
 #billboard{
 	border-style:solid;
 	border-width:9px;
@@ -46,6 +63,55 @@ p.Instructions{
 	margin-left:45%;
 }
 
+ul{
+	list-style-type:none; 
+	margin:0;
+	padding:0;
+	display:inline;
+}
+
+#light1{
+	background-color:#ccddee;
+	padding:1px;
+	position:fixed;
+	top:1%;
+	right:1%;
+	}
+	
+#light1A{
+	color:#009989;
+	background-color:#a0ddee;
+	font-size:1.2em;
+	margin-top:0px;
+	padding-right:25px;
+	position:fixed;
+	top:16.3%; 
+	right:1%;
+	}
+	
+#light2{
+	background-color:#ccddee;
+	padding:1px;
+	position:fixed;
+	top:23%;
+	right:1%;
+	}
+	
+#light2A{
+	color:#009989;
+	background-color:#a0ddee;
+	font-size:1.2em;
+	margin-top:0px;
+	padding-right:25px;
+	position:fixed;
+	top:38%; 
+	right:1%;
+	}
+
 body{
-background-color:#FFFFCC;
+	background-color:#FFFFCC;
+}
+
+img{
+	height: 30px;
 }
